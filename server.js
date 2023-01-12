@@ -1,33 +1,28 @@
+require('dotenv').config()
 const express = require('express')
-const res = require('express/lib/response')
-const app = express()
+const bodyParser = require('body-parser')
 var cors = require('cors')
-var db = require("./database.js")
+var db = require("./queries")
 
+
+const app = express()
+app.use(bodyParser.json())
+app.use(
+  bodyParser.urlencoded({
+    extended: true,
+  })
+)
 app.use(cors())
-app.set('port', process.env.PORT || 3000)
+app.set('port', process.env.PORT || 3001)
 app.locals.title = 'Rick Roll Counter'
 
 app.get('/', (request, response) => {
   response.json({
-    total: 1
+    "server_status": "Healthy"
   })
 })
 
-app.post("/api/activity", (request, response, next) => {
-  var sql ='INSERT INTO activity (visit_date) VALUES (?)'
-  var params =[new Date()]
-  db.run(sql, params, function (err, result) {
-    if(err){
-      response.status(400).json({"error": err.message})
-      return
-    }
-    response.json({
-      "message": "success",
-      "id": this.lastID,
-    })
-  })
-})
+app.post('/api/activity', db.postActivity)
 
 app.use(function(request, response){
   response.status(404);
