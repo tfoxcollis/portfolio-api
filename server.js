@@ -1,7 +1,9 @@
 const express = require('express')
+const res = require('express/lib/response')
 const app = express()
+var db = require("./database.js")
 
-app.set('port', process.env.PORT || 3000)
+app.set('port', process.env.PORT || 3001)
 app.locals.title = 'Rick Roll Counter'
 
 app.get('/', (request, response) => {
@@ -10,8 +12,23 @@ app.get('/', (request, response) => {
   })
 })
 
+app.post("/api/activity", (request, response, next) => {
+  var sql ='INSERT INTO activity (visit_date) VALUES (?)'
+  var params =[new Date()]
+  db.run(sql, params, function (err, result) {
+    if(err){
+      response.status(400).json({"error": err.message})
+      return
+    }
+    response.json({
+      "message": "success",
+      "id": this.lastID,
+    })
+  })
+})
+
 app.use(function(request, response){
-  res.status(404);
+  response.status(404);
 });
 
 app.listen(app.get('port'), () => {
