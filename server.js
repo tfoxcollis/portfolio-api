@@ -1,8 +1,10 @@
 const express = require('express')
 const res = require('express/lib/response')
 const app = express()
+var cors = require('cors')
 var db = require("./database.js")
 
+app.use(cors())
 app.set('port', process.env.PORT || 3001)
 app.locals.title = 'Rick Roll Counter'
 
